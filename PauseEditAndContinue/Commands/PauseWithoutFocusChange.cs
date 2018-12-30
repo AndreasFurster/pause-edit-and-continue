@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
@@ -41,7 +42,7 @@ namespace PauseEditAndContinue.Commands
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
             var menuCommandID = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(this.Execute, menuCommandID);
+            var menuItem = new MenuCommand(this.ExecuteAsync, menuCommandID);
             commandService.AddCommand(menuItem);
         }
 
@@ -86,20 +87,39 @@ namespace PauseEditAndContinue.Commands
         /// </summary>
         /// <param name="sender">Event sender.</param>
         /// <param name="e">Event args.</param>
-        private void Execute(object sender, EventArgs e)
+        private async void ExecuteAsync(object sender, EventArgs e)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            string title = "PauseWithoutFocusChange";
+            await PauseExecutionAsync();
 
-            // Show a message box to prove we were here
-            VsShellUtilities.ShowMessageBox(
-                this.package,
-                message,
-                title,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            //string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
+            //string title = "PauseWithoutFocusChange";
+
+            //// Show a message box to prove we were here
+            //VsShellUtilities.ShowMessageBox(
+            //    this.package,
+            //    message,
+            //    title,
+            //    OLEMSGICON.OLEMSGICON_INFO,
+            //    OLEMSGBUTTON.OLEMSGBUTTON_OK,
+            //    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+        }
+
+        private async Task PauseExecutionAsync()
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            EnvDTE80.DTE2 applicationObject = await ServiceProvider.GetServiceAsync(typeof(DTE)) as EnvDTE80.DTE2;
+
+            // Get active window
+            var activeWindow = applicationObject.ActiveWindow;
+
+            // Break
+            applicationObject.Debugger.Break();
+
+            // Switch back to previous active window if needed
+            if (applicationObject.ActiveWindow != activeWindow)
+            {
+                applicationObject.ActiveWindow.Close(vsSaveChanges.vsSaveChangesNo);
+            }
         }
     }
 }

@@ -59,7 +59,7 @@
         <Parent guid="guidPauseWithoutFocusChangePackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>Invoke PauseWithoutFocusChange</ButtonText>
+          <ButtonText>Pause, edit and continue</ButtonText>
         </Strings>
       </Button>
     </Buttons>
