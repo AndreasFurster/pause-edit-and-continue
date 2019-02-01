@@ -89,7 +89,16 @@ namespace PauseEditAndContinue.Commands
         /// <param name="e">Event args.</param>
         private async void ExecuteAsync(object sender, EventArgs e)
         {
-            await PauseExecutionAsync();
+            // TODO: Maybe prevent exceptions by validating if the user is even debugging
+            try
+            {
+                await PauseExecutionAsync();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+            
 
             //string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
             //string title = "PauseWithoutFocusChange";
@@ -112,6 +121,7 @@ namespace PauseEditAndContinue.Commands
             // Get active window
             var activeWindow = applicationObject.ActiveWindow;
 
+            
             // Break
             applicationObject.Debugger.Break();
 
