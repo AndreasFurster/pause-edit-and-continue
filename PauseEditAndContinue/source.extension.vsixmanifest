@@ -6,7 +6,9 @@
         <Description xml:space="preserve">This extension makes it possible to break debug execution without changing to another window. Then you can make use of edit and continue to develop further. </Description>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />
+        <InstallationTarget Version="[14.0, 17.0)" Id="Microsoft.VisualStudio.Community" />
+        <InstallationTarget Version="[14.0, 17.0)" Id="Microsoft.VisualStudio.Pro" />
+        <InstallationTarget Version="[14.0, 17.0)" Id="Microsoft.VisualStudio.Enterprise" />
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
